@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Hadoop | Autodidact]]></title>
+  <link href="http://hhimanshu.github.com/blog/categories/hadoop/atom.xml" rel="self"/>
+  <link href="http://hhimanshu.github.com/"/>
+  <updated>2012-07-30T07:40:55-07:00</updated>
+  <id>http://hhimanshu.github.com/</id>
+  <author>
+    <name><![CDATA[Harit Himanshu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CitationHistogram - first Hadoop program]]></title>
+    <link href="http://hhimanshu.github.com/blog/2012/07/30/citationhistogram-first-hadoop-program/"/>
+    <updated>2012-07-30T07:03:00-07:00</updated>
+    <id>http://hhimanshu.github.com/blog/2012/07/30/citationhistogram-first-hadoop-program</id>
+    <content type="html"><![CDATA[<p>This is my first post in attempt to learn Hadoop using Java.
+I am using "Hadoop in Action" book to learn. The first program is about building a Citation Histogram (mentioned completely in the book)
+It has two parts:</p>
+
+<p>Part - 1 : Building the map reduce program to count the number of citations "cited"</p>
+
+<p>Part - 2 : Building the map reduce program to count the counts and plot them</p>
+
+<p>I have used R for plotting the graph.</p>
+
+<p><div><script src='https://gist.github.com/3207166.js?file='></script>
+<noscript><pre><code>package com.hadoop.patent;
+
+
+/**
+ * This program collect data about how many times a patent has been cited
+ * input data - http://data.nber.org/patents/
+ * use the citation data set cite75_99.txt and the patent description data set apat63_99.txt.
+ */
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+import java.io.IOException;
+import java.util.Iterator;
+
+public class CitationHistogram extends Configured implements Tool {
+
+	public static class MapClass extends MapReduceBase implements Mapper&lt;Text, Text, IntWritable, IntWritable&gt; {
+
+		private final static IntWritable uno = new IntWritable(1);
+		private IntWritable citationCount = new IntWritable();
+
+		public void map(Text key, Text value, OutputCollector&lt;IntWritable, IntWritable&gt; output, Reporter reporter) throws IOException {
+		    citationCount.set(Integer.parseInt(value.toString()));
+			output.collect(citationCount, uno);
+		}
+	}
+
+	public static class Reduce extends MapReduceBase implements Reducer&lt;IntWritable, IntWritable, IntWritable, IntWritable&gt; {
+
+		public void reduce(IntWritable key, Iterator&lt;IntWritable&gt; values, OutputCollector&lt;IntWritable, IntWritable&gt; output, Reporter reporter) throws IOException {
+			int count = 0;
+			while (values.hasNext()) {
+				count += values.next().get();
+			}
+
+			output.collect(key, new IntWritable(count));
+		}
+	}
+
+	public int run(String args[]) throws Exception {
+		Configuration conf = getConf();
+
+		JobConf job = new JobConf(conf, CitationHistogram.class);
+
+		Path in = new Path(args[0]);
+		Path out = new Path(args[1]);
+
+		FileInputFormat.setInputPaths(job, in);
+		FileOutputFormat.setOutputPath(job, out);
+
+		job.setJobName(&quot;CitationHistogram&quot;);
+		job.setMapperClass(MapClass.class);
+		job.setReducerClass(Reduce.class);
+
+		job.setInputFormat(KeyValueTextInputFormat.class);
+		job.setOutputFormat(TextOutputFormat.class);
+
+		job.setOutputKeyClass(IntWritable.class);
+		job.setOutputValueClass(IntWritable.class);
+
+//		job.set(&quot;key.value.separator.in.input.line&quot;, &quot;,&quot;);
+
+		JobClient.runJob(job);
+		return 0;
+	}
+
+	public static void main(String args[]) throws Exception {
+		int res = ToolRunner.run(new Configuration(), new CitationHistogram(), args);
+	}
+}
+</code></pre></noscript></div>
+</p>
+
+<p>For part - 1, you need to uncomment the part</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">//      job.set(&quot;key.value.separator.in.input.line&quot;, &quot;,&quot;);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>because input dataset has "," as input separator.</p>
+
+<p>The output of part - 1 becomes the input for part - 2 and the input separator is tab(\t).
+Our InputFormat class is</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">job</span><span class="o">.</span><span class="na">setInputFormat</span><span class="o">(</span><span class="n">KeyValueTextInputFormat</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and the default input separator is tab(\t) for this class.</p>
+
+<p>So we see that the same program is reused twice.</p>
+
+<p>Now the way you run this is as following:</p>
+
+<pre><code> - Build jar for the class CitationHistogram (you can do this by using your IDE, I am using IntelliJ IDEA)
+
+ - copy the input to hadoop file system
+</code></pre>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">hadoop</span> <span class="n">dfs</span> <span class="o">-</span><span class="n">mkdir</span> <span class="n">input</span>
+</span><span class='line'><span class="n">hadoop</span> <span class="n">dfs</span> <span class="o">-</span><span class="n">copyFromLocal</span> <span class="o">&amp;</span><span class="n">lt</span><span class="o">;</span><span class="n">path_to_acite_75_99</span><span class="o">.</span><span class="na">txt</span><span class="o">&gt;</span> <span class="n">input</span><span class="o">/</span>
+</span><span class='line'><span class="n">hadoop</span> <span class="n">jar</span> <span class="n">Hadoop</span><span class="o">-</span><span class="n">programs</span><span class="o">.</span><span class="na">jar</span> <span class="n">com</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">patent</span><span class="o">/</span><span class="n">CitationHistogram</span> <span class="n">input</span> <span class="n">output</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="nl">Note:</span> <span class="n">make</span> <span class="n">sure</span> <span class="n">output</span> <span class="n">drectory</span> <span class="n">doesn</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">exists</span> <span class="n">on</span> <span class="n">hadoop</span> <span class="n">filesystem</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Once your program completes, you can run the following to get the data out from HDFS
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">hadoop</span> <span class="n">dfs</span> <span class="o">-</span><span class="n">cat</span> <span class="n">output</span><span class="o">/</span><span class="n">part</span><span class="o">-</span><span class="mi">00000</span> <span class="o">&gt;</span> <span class="o">~/</span><span class="n">Downloads</span><span class="o">/</span><span class="n">hadoop</span><span class="o">/</span><span class="n">output</span><span class="o">/</span><span class="n">CitationHistogramCount</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and the you can read this in R(language) to plot the graph
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">CitationHistogram</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">mydata</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="na">csv</span><span class="o">(</span><span class="n">file</span><span class="o">=</span><span class="s">&quot;~/Downloads/hadoop/output/CitationHistogramCount&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="n">mydata</span>
+</span><span class='line'><span class="nf">plot</span><span class="o">(</span><span class="n">mydata</span><span class="o">,</span> <span class="n">xlab</span><span class="o">=</span><span class="s">&quot;Number of Citations&quot;</span><span class="o">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&quot;Number of Patents&quot;</span><span class="o">,</span> <span class="n">log</span><span class="o">=</span><span class="s">&quot;y&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and you can see the CitationHistogram following Power Law as following</p>
+
+<p><img src="http://a.yfrog.com/img232/1231/vtd.png"></p>
+]]></content>
+  </entry>
+  
+</feed>
