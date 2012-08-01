@@ -9,8 +9,7 @@
   <meta name="author" content="Harit Himanshu">
 
   
-  <meta name="description" content="This is my first post in attempt to learn Hadoop using Java.
-I am using &#8220;Hadoop in Action&#8221; book to learn. The first program is about &hellip;">
+  <meta name="description" content="This morning I had a requirement where in I had to get the list of all names in my collections in a file. I looked over the MongoDB documentation and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,72 @@ I am using &#8220;Hadoop in Action&#8221; book to learn. The first program is ab
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/">Extracting Specific Fields From Your Mongo Collection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-01T10:06:00-07:00" pubdate data-updated="true">Aug 1<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This morning I had a requirement where in I had to get the list of all names in my collections in a file.</p>
+
+<p>I looked over the <a href="http://www.mongodb.org">MongoDB</a> documentation and found <a href="http://www.mongodb.org/display/DOCS/mongoexport">mongoexport</a> utility that makes your life easier</p>
+
+<p>To use it, it was pretty simple. Consider my schema as</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># database - mydatabase, collection - mycollection</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">date</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">some_date</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">some_value</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="c"># .... and so on</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Suppose you need to take out all the &#8216;name&#8217; and &#8216;value&#8217; from collection in a file. You will do the following</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'>   <span class="err">$</span><span class="n">mongoexport</span> <span class="o">-</span><span class="n">d</span> <span class="n">mydatabase</span> <span class="o">-</span><span class="n">c</span> <span class="n">mycollection</span> <span class="o">-</span><span class="n">f</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">--</span><span class="n">csv</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thats it!!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -321,6 +386,10 @@ Our InputFormat class is</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/">extracting specific fields from your mongo collection</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/07/30/citationhistogram-first-hadoop-program/">CitationHistogram - first Hadoop program</a>

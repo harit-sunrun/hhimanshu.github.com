@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mongoDB | Autodidact]]></title>
+  <link href="http://hhimanshu.github.com/blog/categories/mongodb/atom.xml" rel="self"/>
+  <link href="http://hhimanshu.github.com/"/>
+  <updated>2012-08-01T10:18:09-07:00</updated>
+  <id>http://hhimanshu.github.com/</id>
+  <author>
+    <name><![CDATA[Harit Himanshu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[extracting specific fields from your mongo collection]]></title>
+    <link href="http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/"/>
+    <updated>2012-08-01T10:06:00-07:00</updated>
+    <id>http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection</id>
+    <content type="html"><![CDATA[<p>This morning I had a requirement where in I had to get the list of all names in my collections in a file.</p>
+
+<p>I looked over the <a href="http://www.mongodb.org">MongoDB</a> documentation and found <a href="http://www.mongodb.org/display/DOCS/mongoexport">mongoexport</a> utility that makes your life easier</p>
+
+<p>To use it, it was pretty simple. Consider my schema as</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">database</span> <span class="o">-</span> <span class="n">mydatabase</span><span class="p">,</span> <span class="n">collection</span> <span class="o">-</span> <span class="n">mycollection</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">name</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">something</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;,</span>
+</span><span class='line'><span class="n">date</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">some_date</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;,</span>
+</span><span class='line'><span class="n">value</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">some_value</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;,</span>
+</span><span class='line'><span class="c"># .... and so on</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Suppose you need to take out all the 'name' and 'value' from collection in a file. You will do the following</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="err">$</span><span class="n">mongoexport</span> <span class="o">-</span><span class="n">d</span> <span class="n">mydatabase</span> <span class="o">-</span><span class="n">c</span> <span class="n">mycollection</span> <span class="o">-</span><span class="n">f</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">--</span><span class="n">csv</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Thats it!!</p>
+]]></content>
+  </entry>
+  
+</feed>

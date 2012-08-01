@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: Java - Autodidact</title>
+  <title>extracting specific fields from your mongo collection - Autodidact</title>
   <meta name="author" content="Harit Himanshu">
 
   
-  <meta name="description" content="Category: Java">
+  <meta name="description" content="This morning I had a requirement where in I had to get the list of all names in my collections in a file. I looked over the MongoDB documentation and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hhimanshu.github.comblog/categories/java/">
+  <link rel="canonical" href="http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,36 +76,121 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Java</h1>
+    
+      <h1 class="entry-title">Extracting Specific Fields From Your Mongo Collection</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-01T10:06:00-07:00" pubdate data-updated="true">Aug 1<span>st</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>This morning I had a requirement where in I had to get the list of all names in my collections in a file.</p>
 
-  
-  <h2>2012</h2>
+<p>I looked over the <a href="http://www.mongodb.org">MongoDB</a> documentation and found <a href="http://www.mongodb.org/display/DOCS/mongoexport">mongoexport</a> utility that makes your life easier</p>
 
-<article>
-  
-<h1><a href="/blog/2012/07/30/citationhistogram-first-hadoop-program/">CitationHistogram - first Hadoop program</a></h1>
-<time datetime="2012-07-30T07:03:00-07:00" pubdate><span class='month'>Jul</span> <span class='day'>30</span> <span class='year'>2012</span></time>
+<p>To use it, it was pretty simple. Consider my schema as</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/hadoop/'>Hadoop</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/r/'>R</a></span>
-</footer>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># database - mydatabase, collection - mycollection</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">name</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">something</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">date</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">some_date</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">value</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">some_value</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span class='line'>  <span class="c"># .... and so on</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-</article>
+<p>Suppose you need to take out all the &#8216;name&#8217; and &#8216;value&#8217; from collection in a file. You will do the following</p>
 
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'>   <span class="err">$</span><span class="n">mongoexport</span> <span class="o">-</span><span class="n">d</span> <span class="n">mydatabase</span> <span class="o">-</span><span class="n">c</span> <span class="n">mycollection</span> <span class="o">-</span><span class="n">f</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">--</span><span class="n">csv</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thats it!!</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Harit Himanshu</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-01T10:06:00-07:00" pubdate data-updated="true">Aug 1<span>st</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mongodb/'>mongoDB</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/" data-via="harittweets" data-counturl="http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/30/citationhistogram-first-hadoop-program/" title="Previous Post: CitationHistogram - first Hadoop program">&laquo; CitationHistogram - first Hadoop program</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -205,7 +290,10 @@
       var disqus_shortname = 'logbookoflearner';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/';
+        var disqus_url = 'http://hhimanshu.github.com/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
