@@ -9,7 +9,7 @@
   <meta name="author" content="Harit Himanshu">
 
   
-  <meta name="description" content="This morning I had a requirement where in I had to get the list of all names in my collections in a file. I looked over the MongoDB documentation and &hellip;">
+  <meta name="description" content="This is true that you woule never have to write a Map Reduce program from scratch. This is what I learned while reading it from Hadoop in Action I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,112 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/">Basic Template for Your Most Map Reduce Programs</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-02T15:38:00-07:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is true that you woule never have to write a Map Reduce program from scratch. This is what I learned while reading it from <a href="http://manning.com/lam/">Hadoop in Action</a></p>
+
+<p>I thought I would be a nice thing to write a basic Map Reduce skeleton that I and almost anyone want to write Map Reduce program can leverage.</p>
+
+<p>Here is it</p>
+
+<div><script src='https://gist.github.com/3241462.js?file='></script>
+<noscript><pre><code>import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+import java.io.IOException;
+
+public class MapReduceClass extends Configured implements Tool {
+
+    public static class MapClass extends Mapper&lt;LongWritable, Text, Text, LongWritable&gt; {
+
+        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            // your map code goes here
+
+        }
+    }
+
+
+    public static class Reduce extends Reducer&lt;Text, LongWritable, Text, Text&gt; {
+
+        public void reduce(Text key, Iterable&lt;LongWritable&gt; values, Context context) throws IOException, InterruptedException {
+            // your reduce function goes here
+    }
+
+    public int run(String args[]) throws Exception {
+        Job job = new Job();
+        job.setJarByClass(MapReduceClass.class);
+
+        job.setMapperClass(MapClass.class);
+        job.setReducerClass(Reduce.class);
+
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        // if your map output key/value classes are different than your input key/value classes
+        // see - http://stackoverflow.com/questions/11761135/hadoop-job-fails-while-reducing-java-io-ioexception-type-mismatch-in-value-fro
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(LongWritable.class);
+        
+        job.setJobName(&quot;MapReduceClass&quot;);
+
+        // uncomment the following if you just want to run Mapper and not Reducer
+//        job.setNumReduceTasks(0);
+        boolean success = job.waitForCompletion(true);
+        return success ? 0 : 1;
+    }
+
+    public static void main(String args[]) throws Exception {
+        int ret = ToolRunner.run(new MapReduceClass(), args);
+        System.exit(ret);
+    }
+}</code></pre></noscript></div>
+
+
+<p>Let me know if you see any issues with that or you would like to share anything that would be useful.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -397,6 +503,10 @@ Our InputFormat class is</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/">Basic Template for your most Map Reduce programs</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/">extracting specific fields from your mongo collection</a>
