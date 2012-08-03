@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hadoop | Stack Dump]]></title>
   <link href="http://hhimanshu.github.com/blog/categories/hadoop/atom.xml" rel="self"/>
   <link href="http://hhimanshu.github.com/"/>
-  <updated>2012-08-03T11:03:14-07:00</updated>
+  <updated>2012-08-03T13:26:52-07:00</updated>
   <id>http://hhimanshu.github.com/</id>
   <author>
     <name><![CDATA[Harit Himanshu]]></name>
@@ -12,6 +12,49 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Passing parameters to mappers and reducers in new Hadoop API]]></title>
+    <link href="http://hhimanshu.github.com/blog/2012/08/03/passing-parameters-to-mappers-and-reducers-in-new-hadoop-api/"/>
+    <updated>2012-08-03T13:20:00-07:00</updated>
+    <id>http://hhimanshu.github.com/blog/2012/08/03/passing-parameters-to-mappers-and-reducers-in-new-hadoop-api</id>
+    <content type="html"><![CDATA[<p>This came out as my part of learning where I had to pass variable on runtime to reducer to show up only the number of records I pass as parameter</p>
+
+<p>I looked up and found that there are two ways - using old API and using new API.</p>
+
+<p>Assuming that you are using the latest hadoop distribution, you are using new API, here is how you would do it</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c1">// while setting up job</span>
+</span><span class='line'><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+</span><span class='line'><span class="n">conf</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="s">&quot;NumberOfRecords&quot;</span><span class="o">,</span> <span class="n">args</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span> <span class="c1">// I chose to get param from command-line, you can override to any value</span>
+</span><span class='line'><span class="n">Job</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Job</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// in your mapper() or reducer()</span>
+</span><span class='line'><span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getConfiguration</span><span class="o">();</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">maxRecords</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">conf</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;NumberOfRecords&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and this is all you need!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Basic Template for your most Map Reduce programs]]></title>
