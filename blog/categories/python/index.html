@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Basic Template for your most Map Reduce programs - Stack Dump</title>
+  <title>Category: python - Stack Dump</title>
   <meta name="author" content="Harit Himanshu">
 
   
-  <meta name="description" content="This is true that you would never have to write a Map Reduce program from scratch. This is what I learned while reading Hadoop in Action I thought I &hellip;">
+  <meta name="description" content="Category: python">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://hhimanshu.github.com/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/">
+  <link rel="canonical" href="http://hhimanshu.github.comblog/categories/python/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -81,163 +81,36 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      
-        <h1 class="entry-title">Basic Template for Your Most Map Reduce Programs</h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-02T15:38:00-07:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2012</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Python</h1>
     
   </header>
-
-
-<div class="entry-content"><p>This is true that you would never have to write a Map Reduce program from scratch. This is what I learned while reading <a href="http://manning.com/lam/">Hadoop in Action</a></p>
-
-<p>I thought I would be a nice thing to write a basic Map Reduce skeleton that I and almost anyone want to write Map Reduce program can leverage.</p>
-
-<p>Here is it</p>
-
-<div><script src='https://gist.github.com/3241462.js?file='></script>
-<noscript><pre><code>import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
-
-import java.io.IOException;
-
-public class MapReduceClass extends Configured implements Tool {
-
-    public static class MapClass extends Mapper&lt;LongWritable, Text, Text, LongWritable&gt; {
-
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            // your map code goes here
-
-        }
-    }
-
-
-    public static class Reduce extends Reducer&lt;Text, LongWritable, Text, Text&gt; {
-
-        public void reduce(Text key, Iterable&lt;LongWritable&gt; values, Context context) throws IOException, InterruptedException {
-            // your reduce function goes here
-    }
-
-    public int run(String args[]) throws Exception {
-        Job job = new Job();
-        job.setJarByClass(MapReduceClass.class);
-
-        job.setMapperClass(MapClass.class);
-        job.setReducerClass(Reduce.class);
-
-        FileInputFormat.setInputPaths(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-        // if your map output key/value classes are different than your input key/value classes
-        // see - http://stackoverflow.com/questions/11761135/hadoop-job-fails-while-reducing-java-io-ioexception-type-mismatch-in-value-fro
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(LongWritable.class);
-        
-        job.setJobName(&quot;MapReduceClass&quot;);
-
-        // uncomment the following if you just want to run Mapper and not Reducer
-//        job.setNumReduceTasks(0);
-        boolean success = job.waitForCompletion(true);
-        return success ? 0 : 1;
-    }
-
-    public static void main(String args[]) throws Exception {
-        int ret = ToolRunner.run(new MapReduceClass(), args);
-        System.exit(ret);
-    }
-}</code></pre></noscript></div>
-
-
-<p>Let me know if you see any issues with that or you would like to share anything that would be useful.</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Harit Himanshu</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2012</h2>
+
+<article>
+  
+<h1><a href="/blog/2012/08/03/find-the-hourly-traffic-from-server-logs-using-hadoop/">find the hourly traffic from server logs using hadoop</a></h1>
+<time datetime="2012-08-03T15:45:00-07:00" pubdate><span class='month'>Aug</span> <span class='day'>03</span> <span class='year'>2012</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/hadoop/'>hadoop</a>, <a class='category' href='/blog/categories/python/'>python</a></span>
+</footer>
 
 
-<time datetime="2012-08-02T15:38:00-07:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/hadoop/'>hadoop</a>, <a class='category' href='/blog/categories/java/'>java</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://hhimanshu.github.com/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/" data-via="harittweets" data-counturl="http://hhimanshu.github.com/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/" >Tweet</a>
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/" title="Previous Post: extracting specific fields from your mongo collection">&laquo; extracting specific fields from your mongo collection</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2012/08/03/passing-parameters-to-mappers-and-reducers-in-new-hadoop-api/" title="Next Post: Passing parameters to mappers and reducers in new Hadoop API">Passing parameters to mappers and reducers in new Hadoop API &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -345,10 +218,7 @@ public class MapReduceClass extends Configured implements Tool {
       var disqus_shortname = 'logbookoflearner';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://hhimanshu.github.com/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/';
-        var disqus_url = 'http://hhimanshu.github.com/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hadoop | Stack Dump]]></title>
   <link href="http://hhimanshu.github.com/blog/categories/hadoop/atom.xml" rel="self"/>
   <link href="http://hhimanshu.github.com/"/>
-  <updated>2012-08-03T14:26:43-07:00</updated>
+  <updated>2012-08-03T16:01:53-07:00</updated>
   <id>http://hhimanshu.github.com/</id>
   <author>
     <name><![CDATA[Harit Himanshu]]></name>
@@ -12,6 +12,143 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[find the hourly traffic from server logs using hadoop]]></title>
+    <link href="http://hhimanshu.github.com/blog/2012/08/03/find-the-hourly-traffic-from-server-logs-using-hadoop/"/>
+    <updated>2012-08-03T15:45:00-07:00</updated>
+    <id>http://hhimanshu.github.com/blog/2012/08/03/find-the-hourly-traffic-from-server-logs-using-hadoop</id>
+    <content type="html"><![CDATA[<p>This was relatively eaiser than I thought, or I understood it completely wrong ;)</p>
+
+<p>The question goes like
+<blockquote><p></p></p><p><pre><code>Web traffic measurement—Take a web server log file and write a Streaming program with the Aggregate package to find the hourly traffic to that site.<br/></code></pre></p><p><p></p><footer><strong>Hadoop in Action</strong> <cite>Chapter 4 Problem 2</cite></footer></blockquote></p>
+
+<p>This program makes use of <a href="http://hadoop.apache.org/common/docs/r0.15.2/streaming.html">hadoop-streaming</a> and uses <a href="http://hadoop.apache.org/common/docs/current/api/org/apache/hadoop/mapred/lib/aggregate/package-summary.html">Aggregate package</a> to implement this program</p>
+
+<p>The idea is simple</p>
+
+<pre><code>- get the timestamp from logs
+- make key such that each everything between HOUR:00 to HOUR:59 is HOUR:00
+- call the aggregate package to sum up the values for you
+</code></pre>
+
+<p>Then write a mapper as
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Web Traffic Measurement</span><a href='https://github.com/hhimanshu/hadoop-programs/blob/master/hadoop-programs/src/main/python_scripts/WebTrafficMeasurement/mapper.py'>source code </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c">#! /usr/bin/env python</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">time_split</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time_split</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s">&#39;:00&#39;</span>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&#39;LongValueSum:&#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;1&#39;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and you need to run this using streaming.jar</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>hadoop jar /usr/local/Cellar/hadoop/1.0.3/libexec/contrib/streaming/hadoop-streaming-1.0.3.jar -input input -output output -file mapper.py -mapper 'mapper.py' -reducer aggregate</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>get the output
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ hadoop dfs -get output .</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>and your data after aggregation will look like
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>2006-05-29 14:00    2335
+</span><span class='line'>2006-05-29 15:00    2169
+</span><span class='line'>2006-05-29 16:00    2231
+</span><span class='line'>2006-05-29 17:00    2624
+</span><span class='line'>2006-05-29 18:00    2935
+</span><span class='line'>2006-05-29 19:00    2952
+</span><span class='line'>2006-05-29 20:00    2918
+</span><span class='line'>2006-05-29 21:00    3054
+</span><span class='line'>2006-05-29 22:00    3071
+</span><span class='line'>2006-05-29 23:00    2369
+</span><span class='line'>2006-05-30 00:00    1752
+</span><span class='line'>2006-05-30 01:00    1071
+</span><span class='line'>2006-05-30 02:00    736
+</span><span class='line'>2006-05-30 03:00    428
+</span><span class='line'>2006-05-30 04:00    269
+</span><span class='line'>2006-05-30 05:00    267
+</span><span class='line'>2006-05-30 06:00    395
+</span><span class='line'>2006-05-30 07:00    694
+</span><span class='line'>2006-05-30 08:00    1027
+</span><span class='line'>2006-05-30 09:00    1595
+</span><span class='line'>2006-05-30 10:00    1668
+</span><span class='line'>2006-05-30 11:00    2291
+</span><span class='line'>2006-05-30 12:00    2052
+</span><span class='line'>2006-05-30 13:00    2311
+</span><span class='line'>2006-05-30 14:00    2250
+</span><span class='line'>2006-05-30 15:00    2215
+</span><span class='line'>2006-05-30 16:00    2454
+</span><span class='line'>2006-05-30 17:00    3002
+</span><span class='line'>2006-05-30 18:00    2744
+</span><span class='line'>2006-05-30 19:00    2894
+</span><span class='line'>2006-05-30 20:00    3072
+</span><span class='line'>2006-05-30 21:00    3065
+</span><span class='line'>2006-05-30 22:00    3031&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;h1>.. more output stripped&lt;/h1>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Finding TopKRecords using hadoop]]></title>
