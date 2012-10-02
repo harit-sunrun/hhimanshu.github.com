@@ -4,7 +4,7 @@
   <title><![CDATA[Category: hadoop | Stack Dump]]></title>
   <link href="http://hhimanshu.github.com/blog/categories/hadoop/atom.xml" rel="self"/>
   <link href="http://hhimanshu.github.com/"/>
-  <updated>2012-10-02T14:14:22-07:00</updated>
+  <updated>2012-10-02T16:36:14-07:00</updated>
   <id>http://hhimanshu.github.com/</id>
   <author>
     <name><![CDATA[Harit Himanshu]]></name>
@@ -12,6 +12,149 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hadoop: Find inner product of two sparse vectors]]></title>
+    <link href="http://hhimanshu.github.com/blog/2012/10/02/hadoop-find-inner-product-of-two-sparse-vectors/"/>
+    <updated>2012-10-02T14:19:00-07:00</updated>
+    <id>http://hhimanshu.github.com/blog/2012/10/02/hadoop-find-inner-product-of-two-sparse-vectors</id>
+    <content type="html"><![CDATA[<p>Its been a while I wrote a hadoop program and thought to come back in action.
+I wrote the program for the following problem</p>
+
+<p><blockquote><p>Inner product of two sparse vectors—A vector is a list of values. Given two vectors, X=[x1,x2,...]andY=[y1,y2,...],theirinnerproductisZ=x1<em>y1+x2</em>y2+... . When X and Y are long but have many elements with zero value, they’re usually given in a sparse representation:1,0.469,0.2117,0.92...</p><footer><strong>Hadoop in Action</strong> <cite>Chapter 4 Problem 3</cite></footer></blockquote></p>
+
+<p>Given a problem statement this is pretty straightforward thing to do.</p>
+
+<p><code>
+read the input
+since the input could be sparse, means x1, x2 both could be zero, just ignore them, since they are not going to make any change in output
+</code></p>
+
+<p>The program is simple to write</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>InnerProductOfTwoVectors </span><a href='https://raw.github.com/hhimanshu/hadoop-programs/master/hadoop-programs/src/main/python_scripts/InnerProductOfTwoSparseMatrices/mapper.py'>link</a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="err">!</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">env</span> <span class="n">python</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="s">Assumption : all inputs in matrix are integer</span>
+</span><span class='line'><span class="s">If they contain decimals, change the multiplication to</span>
+</span><span class='line'><span class="s">__get_float_multiplication</span>
+</span><span class='line'><span class="s">&quot;&quot;&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">sys</span>
+</span><span class='line'><span class="n">key</span> <span class="o">=</span> <span class="s">&#39;1&#39;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">__get_integer_multiplication</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">__get_float_multiplication</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;0&quot;</span> <span class="ow">and</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;0&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">continue</span>
+</span><span class='line'><span class="k">print</span> <span class="s">&#39;LongValueSum:&#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">__get_integer_multiplication</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Lets run this ..</p>
+
+<p><code>
+$ less ~/Downloads/tmp/innerproduct
+1,2
+3,4
+0,0
+5,6
+</code>
+Think of these as (x1, x2) pairs</p>
+
+<p><code>
+hadoop dfs -put innerproduct input/innerproduct
+</code></p>
+
+<p><code>
+$ hadoop jar /usr/local/Cellar/hadoop/1.0.3/libexec/contrib/streaming/hadoop-streaming-1.0.3.jar -D mapred.reduce.tasks=1 -mapper 'mapper.py' -file mapper.py -input input -output output -reducer aggregate
+</code></p>
+
+<p>This runs pretty quickly</p>
+
+<p><code>
+2012-10-02 13:02:52.781 java[50196:1203] Unable to load realm info from SCDynamicStore
+packageJobJar: [mapper.py, /Users/hhimanshu/app/hadoop/tmp/hadoop-unjar3930199009535869988/] [] /var/folders/v4/tt6p3k950f1_m9p29d0mx5f80000gp/T/streamjob4922862718386718220.jar tmpDir=null
+12/10/02 13:02:53 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+12/10/02 13:02:53 WARN snappy.LoadSnappy: Snappy native library not loaded
+12/10/02 13:02:53 INFO mapred.FileInputFormat: Total input paths to process : 1
+12/10/02 13:02:53 INFO streaming.StreamJob: getLocalDirs(): [/Users/hhimanshu/app/hadoop/tmp/mapred/local]
+12/10/02 13:02:53 INFO streaming.StreamJob: Running job: job_201210021236_0008
+12/10/02 13:02:53 INFO streaming.StreamJob: To kill this job, run:
+12/10/02 13:02:53 INFO streaming.StreamJob: /usr/local/Cellar/hadoop/1.0.3/libexec/bin/../bin/hadoop job  -Dmapred.job.tracker=localhost:9001 -kill job_201210021236_0008
+12/10/02 13:02:53 INFO streaming.StreamJob: Tracking URL: http://localhost:50030/jobdetails.jsp?jobid=job_201210021236_0008
+12/10/02 13:02:54 INFO streaming.StreamJob:  map 0%  reduce 0%
+12/10/02 13:03:06 INFO streaming.StreamJob:  map 100%  reduce 0%
+12/10/02 13:03:18 INFO streaming.StreamJob:  map 100%  reduce 100%
+12/10/02 13:03:24 INFO streaming.StreamJob: Job complete: job_201210021236_0008
+12/10/02 13:03:24 INFO streaming.StreamJob: Output: output
+</code></p>
+
+<p>and the output
+<code>
+$ hadoop dfs -cat output/part-00000
+2012-10-02 15:05:46.009 java[77714:1203] Unable to load realm info from SCDynamicStore
+1   44
+</code></p>
+
+<p>Lets confirm this if this is right output
+<code>
+1*2 + 3*4 + 0*0 + 5*6
+2 + 12 + 0 + 30
+14 + 40
+44
+</code>
+So we have implemented this correctly.
+Now you can run this on any number of machines as long as input format is same as mentioned above.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[find the hourly traffic from server logs using hadoop]]></title>
