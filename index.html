@@ -9,7 +9,7 @@
   <meta name="author" content="Harit Himanshu">
 
   
-  <meta name="description" content="This was relatively eaiser than I thought, or I understood it completely wrong ;) The question goes like Web traffic measurement—Take a web server &hellip;">
+  <meta name="description" content="I have been working with a project lately which will migrate all the documents from datacenter to Amazon Web Services S3. As part of this project, I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,108 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2012/09/18/packaging-module-build-jar-with-dependencies-included/">Packaging Module : Build Jar With Dependencies Included</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-18T13:59:00-07:00" pubdate data-updated="true">Sep 18<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I have been working with a project lately which will migrate all the documents from datacenter to Amazon Web Services S3.</p>
+
+<p>As part of this project, I had to build a small upload app, which will put these documents in Amazon.</p>
+
+<p>The requirement I had was to build my app as jar and include all dependencies in the jar.</p>
+
+<p>I googled around and realized that the following code in your <code>pom.xml</code> will do the trick</p>
+
+<div><script src='https://gist.github.com/3745927.js?file='></script>
+<noscript><pre><code>&lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.3.1&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;archive&gt;
+                        &lt;addMavenDescriptor&gt;false&lt;/addMavenDescriptor&gt;
+                        &lt;manifest&gt;
+                            &lt;addDefaultImplementationEntries&gt;true&lt;/addDefaultImplementationEntries&gt;
+                            &lt;addDefaultSpecificationEntries&gt;true&lt;/addDefaultSpecificationEntries&gt;
+                        &lt;/manifest&gt;
+                    &lt;/archive&gt;
+                &lt;/configuration&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;phase&gt;package&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;test-jar&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.3&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;descriptorRefs&gt;
+                        &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+                    &lt;/descriptorRefs&gt;
+                    &lt;archive&gt;
+                        &lt;manifest&gt;
+                            &lt;mainClass&gt;com.sunrunhome.sparrow.upload.ProposalUploader
+                            &lt;/mainClass&gt;
+                        &lt;/manifest&gt;
+                    &lt;/archive&gt;
+                &lt;/configuration&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;make-assembly&lt;/id&gt;
+                        &lt;!-- this is used for inheritance merges --&gt;
+                        &lt;phase&gt;package&lt;/phase&gt;
+                        &lt;!-- bind to the packaging phase --&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;single&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -996,6 +1098,10 @@ Our InputFormat class is</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/09/18/packaging-module-build-jar-with-dependencies-included/">Packaging module : build jar with dependencies included</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/08/03/find-the-hourly-traffic-from-server-logs-using-hadoop/">find the hourly traffic from server logs using hadoop</a>
       </li>
     
@@ -1009,10 +1115,6 @@ Our InputFormat class is</p>
     
       <li class="post">
         <a href="/blog/2012/08/02/basic-template-for-your-most-map-reduce-programs/">Basic Template for your most Map Reduce programs</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/08/01/extracting-specific-fields-from-your-mongo-collection/">extracting specific fields from your mongo collection</a>
       </li>
     
   </ul>
